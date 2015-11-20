@@ -2,8 +2,8 @@ var nodemailer = require( 'nodemailer' );
 var transporter = nodemailer.createTransport({
 	service: 'gmail',
 	auth: {
-		user: 'jdoodlesack@gmail.com',
-		pass: 'lithos'
+		user: '',
+		pass: ''
 	}
 });
 
@@ -39,7 +39,7 @@ MemberPool.prototype.shuffle = function () {
 MemberPool.prototype.email = function ( member ) {
 
 	transporter.sendMail({
-		from: 'jdoodlesack@gmail.com',
+		from: '',
 		to: member.email,
 		subject: 'Christmas Exchange Assignment - DO NOT REPLY!',
 		text: 'Hey! You have ' + this.members[member.assignment].name
@@ -67,10 +67,6 @@ MemberPool.prototype.assign = function () {
 
 var memberPool = new MemberPool();
 
-memberPool.addMember( 'Ian', 'lamont.ibrow@gmail.com' );
-memberPool.addMember( 'Jacob', 'cob@jacoblamont.com' );
-memberPool.addMember( 'Hannah', 'hmlamont@gmail.com' );
-memberPool.addMember( 'Mom', 'glamont@stny.rr.com' );
-memberPool.addMember( 'Dad', 'lamont.pensels@gmail.com' );
+memberPool.addMember( 'name', 'email' );
 
 memberPool.assign();
