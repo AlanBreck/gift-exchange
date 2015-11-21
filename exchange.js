@@ -1,19 +1,24 @@
-var nodemailer = require( 'nodemailer' );
+var nodemailer = require( "nodemailer" );
 var transporter = nodemailer.createTransport({
-	service: 'gmail',
+	service: "gmail",
 	auth: {
-		user: '',
-		pass: ''
+		user: <string>,
+		pass: <string>
 	}
 });
 
-var _ = require( 'lodash' );
-var util = require( 'util' );
+var _ = require( "lodash" );
+var util = require( "util" );
 
-function Member ( name, email ) {
+function Member ( params ) {
 
-	this.name = name;
-	this.email = email;
+	this.name = params.name;
+	this.email = params.email;
+	
+	if ( params.previousAssignment ) {
+		this.previousAssignment = params.previousAssignment;
+	}
+	
 	this.assignment;
 
 }
@@ -24,40 +29,36 @@ function MemberPool() {
 
 }
 
-MemberPool.prototype.addMember = function ( name, email ) {
+MemberPool.prototype.addMember = function ( params ) {
 
-	this.members.push( new Member( name, email ) );
-
-};
-
-MemberPool.prototype.shuffle = function () {
-
-	this.members = _.shuffle( this.members );
+	this.members.push( new Member( params ) );
 
 };
 
 MemberPool.prototype.email = function ( member ) {
-
+	
+	
 	transporter.sendMail({
-		from: '',
+		from: <string>,
 		to: member.email,
-		subject: 'Christmas Exchange Assignment - DO NOT REPLY!',
-		text: 'Hey! You have ' + this.members[member.assignment].name
+		subject: <string>,
+		text: "Hey! You have " + member.assignment.name
 	});
 
 };
 
 MemberPool.prototype.assign = function () {
-
-	this.shuffle();
+	
+	var memberIds = _.keys( this.members ).map( Number );
 
 	this.members.forEach( function ( member, index ) {
-
-		if ( index !== ( this.members.length - 1 ) ) {
-
-			member.assignment = index+1;
-
-		} else member.assignment = 0;
+		
+		var prevAssignmentId = _.findIndex( this.members, { name: member.previousAssignment } );
+		var possibleAssignments = _.without( memberIds, index, prevAssignmentId );
+		var assignmentId = _.sample( possibleAssignments )
+		member.assignment = this.members[assignmentId];
+		
+		_.pull( memberIds, assignmentId );
 
 		this.email( member );
 
@@ -67,6 +68,10 @@ MemberPool.prototype.assign = function () {
 
 var memberPool = new MemberPool();
 
-memberPool.addMember( 'name', 'email' );
+memberPool.addMember({
+	 name: {<string> name},
+	 email: {<string> email address},
+	 previousAssignment: {<string> name field from previous time}
+});
 
 memberPool.assign();
